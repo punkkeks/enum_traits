@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 
+extern crate core;
 extern crate syn;
 #[macro_use]
 extern crate quote;
@@ -7,9 +8,8 @@ extern crate quote;
 extern crate proc_macro;
 use proc_macro::TokenStream;
 
-use std::{cmp,iter};
-use std::ascii::AsciiExt;
-use std::iter::FromIterator;
+use core::{cmp,iter};
+use core::iter::FromIterator;
 use syn::{Attribute,Body,Expr,ExprKind,Ident,Lit,IntTy,MacroInput,Variant,VariantData};
 use quote::Tokens;
 
@@ -420,7 +420,7 @@ pub fn derive_EnumFromIndex(input: TokenStream) -> TokenStream{
 				unsafe fn from_index_unchecked(index: <Self as Index>::Type) -> Self{
 					match index{
 						#( #match_arms2 )*
-						_ => ::std::mem::uninitialized()
+						_ => ::core::mem::uninitialized()
 					}
 				}
 			}
@@ -513,7 +513,7 @@ pub fn derive_EnumIter(input: TokenStream) -> TokenStream{//TODO: Consider rewri
 		let impl_default = quote!{
 			#[automatically_derived]
 			#[allow(unused_attributes)]
-			impl #impl_generics ::std::default::Default for #struct_ident #ty_generics #where_clause{
+			impl #impl_generics ::core::default::Default for #struct_ident #ty_generics #where_clause{
 				#[inline(always)]
 				fn default() -> Self{#struct_ident (None)}
 			}
@@ -534,7 +534,7 @@ pub fn derive_EnumIter(input: TokenStream) -> TokenStream{//TODO: Consider rewri
 			let fn_size_hint = quote!{
 				#[inline(always)]
 				fn size_hint(&self) -> (usize,Option<usize>){
-					use ::std::iter::ExactSizeIterator;
+					use ::core::iter::ExactSizeIterator;
 					(self.len(),Some(self.len()))
 				}
 			};
@@ -565,7 +565,7 @@ pub fn derive_EnumIter(input: TokenStream) -> TokenStream{//TODO: Consider rewri
 			quote!{
 				#[automatically_derived]
 				#[allow(unused_attributes)]
-				impl #impl_generics ::std::iter::Iterator for #struct_ident #ty_generics #where_clause{
+				impl #impl_generics ::core::iter::Iterator for #struct_ident #ty_generics #where_clause{
 					type Item = #ident;
 
 					#fn_next
@@ -580,7 +580,7 @@ pub fn derive_EnumIter(input: TokenStream) -> TokenStream{//TODO: Consider rewri
 		let impl_diter = quote!{
 			#[automatically_derived]
 			#[allow(unused_attributes)]
-			impl #impl_generics ::std::iter::DoubleEndedIterator for #struct_ident #ty_generics #where_clause{
+			impl #impl_generics ::core::iter::DoubleEndedIterator for #struct_ident #ty_generics #where_clause{
 				#[inline]
 				fn next_back(&mut self) -> Option<Self::Item>{
 					Some(match &self.0{
@@ -595,7 +595,7 @@ pub fn derive_EnumIter(input: TokenStream) -> TokenStream{//TODO: Consider rewri
 		let impl_exactiter = quote!{
 			#[automatically_derived]
 			#[allow(unused_attributes)]
-			impl #impl_generics ::std::iter::ExactSizeIterator for #struct_ident #ty_generics #where_clause{
+			impl #impl_generics ::core::iter::ExactSizeIterator for #struct_ident #ty_generics #where_clause{
 				#[inline]
 				fn len(&self) -> usize{
 					self.0.as_ref().map_or(#len,|variant|{
@@ -686,7 +686,7 @@ pub fn derive_EnumIterator(input: TokenStream) -> TokenStream{
 			let fn_size_hint = quote!{
 				#[inline(always)]
 				fn size_hint(&self) -> (usize,Option<usize>){
-					use ::std::iter::ExactSizeIterator;
+					use ::core::iter::ExactSizeIterator;
 					(self.len(),Some(self.len()))
 				}
 			};
@@ -715,7 +715,7 @@ pub fn derive_EnumIterator(input: TokenStream) -> TokenStream{
 			quote!{
 				#[automatically_derived]
 				#[allow(unused_attributes)]
-				impl #impl_generics ::std::iter::Iterator for #ident #ty_generics #where_clause{
+				impl #impl_generics ::core::iter::Iterator for #ident #ty_generics #where_clause{
 					type Item = Self;
 					#fn_next
 					#fn_count
@@ -728,7 +728,7 @@ pub fn derive_EnumIterator(input: TokenStream) -> TokenStream{
 		/*let impl_diter = quote!{
 			#[automatically_derived]
 			#[allow(unused_attributes)]
-			impl #impl_generics ::std::iter::DoubleEndedIterator for #ident #ty_generics #where_clause{
+			impl #impl_generics ::core::iter::DoubleEndedIterator for #ident #ty_generics #where_clause{
 				#[inline]
 				#[allow(unreachable_code)]
 				fn next_back(&mut self) -> Option<Self::Item>{
@@ -743,7 +743,7 @@ pub fn derive_EnumIterator(input: TokenStream) -> TokenStream{
 		let impl_eiter = quote!{
 			#[automatically_derived]
 			#[allow(unused_attributes)]
-			impl #impl_generics ::std::iter::ExactSizeIterator for #ident #ty_generics #where_clause{
+			impl #impl_generics ::core::iter::ExactSizeIterator for #ident #ty_generics #where_clause{
 				#[inline]
 				fn len(&self) -> usize{
 					#len - 1 - match self{
@@ -819,7 +819,7 @@ pub fn derive_EnumDiscriminant(input: TokenStream) -> TokenStream{
 				unsafe fn from_discriminant_unchecked(discriminant: <Self as Discriminant>::Type) -> Self{
 					match discriminant{
 						#( #match_arms2 )*
-						_ => ::std::mem::uninitialized()
+						_ => ::core::mem::uninitialized()
 					}
 				}
 			}
@@ -909,7 +909,7 @@ pub fn derive_EnumFromVariantName(input: TokenStream) -> TokenStream {//TODO: Co
 		quote!{
 			#[automatically_derived]
 			#[allow(unused_attributes)]
-			impl #impl_generics ::std::str::FromStr for #ident #ty_generics #where_clause{
+			impl #impl_generics ::core::str::FromStr for #ident #ty_generics #where_clause{
 				type Err = ();
 
 				fn from_str(str: &str) -> Result<Self,Self::Err>{
@@ -1066,83 +1066,3 @@ pub fn derive_EnumTag(input: TokenStream) -> TokenStream{
 	derive_enum(input,gen_impl)
 }
 
-/// Implements functions that checks if the current state of the enum is a certain variant.
-///
-/// # Requirements
-/// - The derived item is an enum
-///
-/// # Examples
-///
-/// ```rust
-/// # #![feature(associated_consts)]
-/// # #[macro_use]extern crate enum_traits_macros;
-/// # extern crate enum_traits;
-/// # use enum_traits::*;
-/// # fn main(){
-/// #[derive(EnumIsVariantFns)]
-/// enum Enum {
-/// 	Dog,
-/// 	Cat(i32),
-/// 	Robot{speed: f32},
-/// }
-/// assert!(Enum::Dog.is_dog());
-/// assert!(Enum::Cat(0).is_cat());
-/// assert!(Enum::Robot{speed: 0.0}.is_robot());
-///
-/// assert!(!Enum::Dog.is_cat());
-/// assert!(!Enum::Dog.is_robot());
-/// assert!(!Enum::Robot{speed: 0.0}.is_cat());
-/// assert!(!Enum::Robot{speed: 0.0}.is_dog());
-/// assert!(!Enum::Cat(0).is_dog());
-/// assert!(!Enum::Cat(0).is_robot());
-/// # }
-/// ```
-#[proc_macro_derive(EnumIsVariantFns)]
-pub fn derive_EnumIsVariantFns(input: TokenStream) -> TokenStream{
-	fn gen_impl(ident: &Ident,item: &MacroInput,data: &Vec<Variant>) -> Tokens{
-		let (impl_generics,ty_generics,where_clause) = item.generics.split_for_impl();
-
-
-		let fns = data.iter().map(|variant|{
-			let fn_ident = Ident::from({
-				const PREFIX: &'static str = "is_";
-				let mut str = String::with_capacity(variant.ident.as_ref().len() + PREFIX.len());
-				str.push_str(PREFIX);
-				str.push_str(variant.ident.as_ref().to_ascii_lowercase().as_ref());
-				str
-			});
-
-			let pattern = {
-				let variant_ident = &variant.ident;
-				match variant.data{
-					VariantData::Unit => {
-						quote! { #ident::#variant_ident }
-					}
-					VariantData::Tuple(_) => {
-						quote! { #ident::#variant_ident(..) }
-					}
-					VariantData::Struct(_) => {
-						quote! { #ident::#variant_ident{..} }
-					}
-				}
-			};
-
-			quote! {
-				#[inline(always)]
-				#[allow(dead_code)]
-				pub fn #fn_ident(&self) -> bool{
-					if let &#pattern = self{true}else{false}
-				}
-			}
-		});
-
-		quote!{
-			#[automatically_derived]
-			#[allow(unused_attributes)]
-			impl #impl_generics #ident #ty_generics #where_clause{
-				#( #fns )*
-			}
-		}
-	}
-	derive_enum(input,gen_impl)
-}
