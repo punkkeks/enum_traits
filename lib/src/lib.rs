@@ -1,7 +1,7 @@
 //! Simple traits for builtin enum items.
 //! Primarily used by `enum_traits_macros` when automatically deriving types.
 //! The crate `enum_traits_macros` is required for the derives.
-
+#![no_std]
 #![cfg_attr(not(feature = "stable"),feature(associated_consts))]
 
 /// Represents the type used for indexing the variants of the enum item.
@@ -79,7 +79,7 @@ pub trait Index{
 /// 			3 => Enum::D,
 /// 			4 => Enum::E,
 /// 			5 => Enum::F,
-/// 			_ => ::std::mem::uninitialized(),
+/// 			_ => ::core::mem::uninitialized(),
 /// 		}
 /// 	}
 /// }
@@ -277,7 +277,7 @@ pub trait Ends: Sized{
 /// 			8  => Enum::D,
 /// 			16 => Enum::E,
 /// 			33 => Enum::F,
-/// 			_ => ::std::mem::uninitialized(),
+/// 			_ => ::core::mem::uninitialized(),
 /// 		}
 /// 	}
 /// }
@@ -354,7 +354,7 @@ pub trait Discriminant: Sized{
 /// }
 /// ```
 pub trait Iterable where
-	<<Self as Iterable>::Iter as Iterator>::Item: ::std::borrow::Borrow<Self>
+	<<Self as Iterable>::Iter as Iterator>::Item: ::core::borrow::Borrow<Self>
 {
 	/// The type of the iterator
 	type Iter: Iterator;
@@ -463,7 +463,7 @@ pub trait VariantName{
 /// }
 /// ```
 pub trait BitPattern{
-	type ByteArray;//TODO: : ::core::array::FixedSizeArray<u8> or : ::std::borrow::Borrow<[u8]>+::std::borrow::BorrowMut<[u8]>+::std::conv::AsRef<[u8]>+::std::conv::AsMut<[u8]>;
+	type ByteArray;//TODO: : ::core::array::FixedSizeArray<u8> or : ::core::borrow::Borrow<[u8]>+::core::borrow::BorrowMut<[u8]>+::core::conv::AsRef<[u8]>+::core::conv::AsMut<[u8]>;
 
 	/// Bit pattern of the currently instantiated variant in the defined order of an enum
 	/// Most significant bit first (e.g. 1000 is 8, 0100 is 4, 0010 is 2, 0001 is 1)
